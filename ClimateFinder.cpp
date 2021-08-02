@@ -36,7 +36,7 @@ void SpecialParam(int option, Param& UserPref);
 vector<float> LoadFile(string path, map<pair<float, float>, LocData>& locations, Param& pref);
 void calcRank(map<pair<float, float>, LocData>& locations, vector<float> winterMax, vector<float> summerMax, Param& pref);
 
-/*
+
 vector<LocData> sortData(map<pair<float, float>, LocData>& locations, char choice);
 
 void quickSort(vector<LocData>& locations, int low, int high);
@@ -45,7 +45,7 @@ void swap(LocData* a, LocData* b);
 
 void mergeSort(vector<LocData>& locations, int const begin, int const end);
 void merge(vector<LocData>& locations, int const left, int const mid, int const right);
-*/
+void createCSV(vector<LocData>& sortedLocations, ofstream& file);
 
 int main() {
 
@@ -56,10 +56,10 @@ int main() {
     cout << "Climate Finder is a tool that compares your climate preferences" << endl;
     cout << "to over 100,000 locations within the United States and matches" << endl;
     cout << "you to your perfect travel destination or future residency." << endl;
-    cout << "---------------------------------------------------------\n" << endl;
+    cout << "---------------------------------------------------------------\n" << endl;
     cout << "This first set of preferences are required and the" << endl;
     cout << "following climate parameters are optional." << endl;
-    cout << "\n-------Please enter all preferences as integers--------\n" << endl;
+    cout << "\n-----------Please enter all preferences as integers------------\n" << endl;
     cout << "Preferred avg temperature (in degrees Fahrenheit) for -" << endl;
     cout << "Summer: ";
     cin >> summer;
@@ -69,7 +69,7 @@ int main() {
     UserPref.TAvg[0] = summer;
     UserPref.TAvg[1] = winter;
 
-    cout << "\n---------------------------------------------------------\n" << endl;
+    cout << "---------------------------------------------------------------\n" << endl;
     string cont;
     cout << "The following climate preferences are optional, you can" << endl;
     cout << "view your results now or continue by adding more preferences.\n" << endl;
@@ -91,7 +91,6 @@ int main() {
                 ShowMenu();
                 continue;
             }
-
         }
     }
 
@@ -102,7 +101,6 @@ int main() {
     vector<float> maxDiffSum = LoadFile("../SummerClimate.csv", locations, UserPref);
     vector<float> maxDiffWinter = LoadFile("../WinterClimate.csv", locations, UserPref);
 
-
     //if location passes for summer climate but not for winter, node is removed from map
     vector<pair<float,float>> deleteNodes;
     for(auto iter = locations.begin(); iter != locations.end(); ++iter){
@@ -112,16 +110,31 @@ int main() {
     for(int i = 0; i < deleteNodes.size(); i++)
         locations.erase(deleteNodes[i]);
 
+    if(locations.size() == 0){
+        cout << "No results were found based on your preferences, please try again.";
+        return 0;
+    }
+
     calcRank(locations, maxDiffSum, maxDiffWinter, UserPref);
-    /*
+
+    cout << locations.size() << " locations were found that match your preferences!" << endl;
+    cout << "---------------------------------------------------------------" << endl;
+    cout << "Matches will now be sorted in order of best to worst match\n" << endl;
+
+    cout << "Performing quicksort: " << endl;
+    //pls create timer and output perfomance for both algs
     vector<LocData> quickSorted = sortData(locations, 'q');
+
     vector<LocData> mergeSorted = sortData(locations, 'm');
-    */
+
+    ofstream mapFile;
+    mapFile.open("../mapPlot.csv");
+    createCSV(mergeSorted, mapFile);
 
 }
 
 void ShowMenu(){
-    cout << "\n---------------------------------------------------------\n" << endl;
+    cout << "\n---------------------------------------------------------------\n" << endl;
     cout << "Available options:" << endl;
     cout << "1. Set limit on minimum temperature" << endl;
     cout << "2. Set limit on maximum temperature" << endl;
@@ -365,7 +378,7 @@ void calcRank(map<pair<float, float>, LocData>& locations, vector<float> winterM
     }
 }
 
-/*
+
 vector<LocData> sortData(map<pair<float, float>, LocData>& locations, char choice)
 {
     vector<LocData> result;
@@ -475,4 +488,15 @@ void merge(vector<LocData>& locations, int const left, int const mid, int const 
         indexOfMerge++;
     }
 }
-*/
+
+void createCSV(vector<LocData>& sortedLocations, ofstream& file){
+
+    int size = sortedLocations.size();
+    for(int i = 0; i < size - 1; i++){
+        float longitude = sortedLocations[i].coordinates.first;
+        float latitude = sortedLocations[i].coordinates.second;
+        file << longitude << ", " << latitude << "\n";
+    }
+    file << sortedLocations[size - 1].coordinates.first << ", " << sortedLocations[size - 1].coordinates.second;
+    file.close();
+}
