@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <vector>
 #include "LocData.h"
 
 struct Param{
@@ -34,6 +35,17 @@ void ShowMenu();
 void SpecialParam(int option, Param& UserPref);
 vector<float> LoadFile(string path, map<pair<float, float>, LocData>& locations, Param& pref);
 void calcRank(map<pair<float, float>, LocData>& locations, vector<float> winterMax, vector<float> summerMax, Param& pref);
+
+/*
+vector<LocData> sortData(map<pair<float, float>, LocData>& locations, char choice);
+
+void quickSort(vector<LocData>& locations, int low, int high);
+int partition(vector<LocData>& locations, int low, int high);
+void swap(LocData* a, LocData* b);
+
+void mergeSort(vector<LocData>& locations, int const begin, int const end);
+void merge(vector<LocData>& locations, int const left, int const mid, int const right);
+*/
 
 int main() {
 
@@ -101,6 +113,10 @@ int main() {
         locations.erase(deleteNodes[i]);
 
     calcRank(locations, maxDiffSum, maxDiffWinter, UserPref);
+    /*
+    vector<LocData> quickSorted = sortData(locations, 'q');
+    vector<LocData> mergeSorted = sortData(locations, 'm');
+    */
 
 }
 
@@ -348,3 +364,115 @@ void calcRank(map<pair<float, float>, LocData>& locations, vector<float> winterM
         iter->second.setRank(rank);
     }
 }
+
+/*
+vector<LocData> sortData(map<pair<float, float>, LocData>& locations, char choice)
+{
+    vector<LocData> result;
+    
+    for(auto it = locations.begin(); it != locations.end(); it++)
+        result.push_back(it->second);
+    
+    if(choice == 'q')
+        quickSort(result, 0, result.size() - 1);
+    if(choice == 'm')
+        mergeSort(result, 0, result.size() - 1);
+        
+    return result;
+}
+
+void quickSort(vector<LocData>& locations, int low, int high)
+{
+    if(low < high)
+    {
+        int partIndex = partition(locations, low, high);
+        
+        quickSort(locations, low, partIndex - 1);
+        quickSort(locations, partIndex + 1, high);
+    }
+}
+
+int partition(vector<LocData>& locations, int low, int high)
+{
+    int pivot = locations[high].rank;
+    int index = low - 1;
+    
+    for(int i = low; i <= high - 1; i++)
+    {
+        if(locations[i].rank <= pivot)
+        {
+            index++;
+            swap(&locations[index], &locations[i]);
+        }
+    }
+    
+    swap(&locations[index + 1], &locations[high]);
+    return index + 1;
+}
+
+void swap(LocData* a, LocData* b)
+{
+    LocData temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void mergeSort(vector<LocData>& locations, int const begin, int const end)
+{
+    if(begin >= end)
+        return;
+        
+    auto mid = begin + (end - begin) / 2;
+    mergeSort(locations, begin, mid);
+    mergeSort(locations, mid + 1, end);
+    merge(locations, begin, mid, end);
+}
+
+void merge(vector<LocData>& locations, int const left, int const mid, int const right)
+{
+    int const leftHalf = mid - left + 1;
+    int const rightHalf = right - mid;
+    
+    vector<LocData> leftArray = vector<LocData>(leftHalf);
+    vector<LocData> rightArray = vector<LocData>(rightHalf);
+    
+    for(int i = 0; i < leftHalf; i++)
+        leftArray[i] = locations[left + i];
+        
+    for(int i = 0; i < rightHalf; i++)
+        rightArray[i] = locations[mid + 1 + i];
+        
+        
+    auto indexLeft = 0, indexRight = 0;
+    int indexOfMerge = left;
+    
+    while(indexLeft < leftHalf && indexRight < rightHalf)
+    {
+        if(leftArray[indexLeft].rank <= rightArray[indexRight].rank)
+        {
+            locations[indexOfMerge] = leftArray[indexLeft];
+            indexLeft++;
+        }
+        else
+        {
+            locations[indexOfMerge] = rightArray[indexRight];
+            indexRight++;
+        }
+        indexOfMerge++;
+    }
+    
+    while(indexLeft < leftHalf)
+    {
+        locations[indexOfMerge] = leftArray[indexLeft];
+        indexLeft++;
+        indexOfMerge++;
+    }
+    
+    while(indexRight < rightHalf)
+    {
+        locations[indexOfMerge] = rightArray[indexRight];
+        indexRight++;
+        indexOfMerge++;
+    }
+}
+*/
