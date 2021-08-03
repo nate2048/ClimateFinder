@@ -24,6 +24,7 @@ public:
     void setDiff(int season, float TAvgDiff, int DX32Diff, int DX90Diff, float PrcpDiff, float SnowDiff);
     vector<float> getDiff();
     void setRank(float rank);
+    vector<float> getData();
 
 };
 

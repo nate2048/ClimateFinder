@@ -43,4 +43,10 @@ void LocData::setRank(float rank){
     this->rank = rank;
 }
 
+vector<float> LocData::getData() {
+
+
+    return {TAvg[0], TAvg[1], EMinT[0], EMinT[1], EMaxT[0], EMaxT[1], Prcp[0], Snow[1]};
+}
+
 

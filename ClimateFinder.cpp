@@ -5,7 +5,12 @@
 #include <sstream>
 #include <cmath>
 #include <vector>
+#include <chrono>
 #include "LocData.h"
+using chrono::high_resolution_clock;
+using chrono::duration_cast;
+using chrono::duration;
+using chrono::milliseconds;
 
 struct Param{
     //User preferences or exclusion factors
@@ -121,11 +126,38 @@ int main() {
     cout << "---------------------------------------------------------------" << endl;
     cout << "Matches will now be sorted in order of best to worst match\n" << endl;
 
-    cout << "Performing quicksort: " << endl;
-    //pls create timer and output perfomance for both algs
-    vector<LocData> quickSorted = sortData(locations, 'q');
+    cout << "Performing QuickSort: " << endl;
 
+    auto t1 = high_resolution_clock::now();
+    vector<LocData> quickSorted = sortData(locations, 'q');
+    auto t2 = high_resolution_clock::now();
+
+    duration<double, std::milli> totalTime = t2 - t1;
+
+    cout << "Time taken = " << totalTime.count() << "ms\n" << endl;
+
+    cout << "Performing MergeSort: " << endl;
+
+    t1 = high_resolution_clock::now();
     vector<LocData> mergeSorted = sortData(locations, 'm');
+    t2 = high_resolution_clock::now();
+
+    totalTime = t2 - t1;
+
+    cout << "Time taken = " << totalTime.count() << "ms\n" << endl;
+
+    cout << "Climate data for top 3 matches: \n" << endl;
+    for(int i = 0; i < 3; i++){
+        cout << "Location: " << mergeSorted[i].coordinates.first << ", " << mergeSorted[i].coordinates.second << endl;
+        cout << "Avg Temp Summer: " << mergeSorted[i].getData()[0] << endl;
+        cout << "Avg Temp Winter: " << mergeSorted[i].getData()[1] << endl;
+        cout << "Extreme minimum temp Summer: " << mergeSorted[i].getData()[2] << endl;
+        cout << "Extreme minimum temp Winter: " << mergeSorted[i].getData()[3] << endl;
+        cout << "Extreme maximum temp Summer: " << mergeSorted[i].getData()[4] << endl;
+        cout << "Extreme maximum temp Winter: " << mergeSorted[i].getData()[5] << endl;
+        cout << "Total precipitation Summer: " << mergeSorted[i].getData()[6] << endl;
+        cout << "Total snowfall Winter: " << mergeSorted[i].getData()[7] << endl << endl;
+    }
 
     ofstream mapFile;
     mapFile.open("../mapPlot.csv");
