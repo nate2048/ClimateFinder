@@ -11,7 +11,7 @@ latitudes = []
 longitudes = []
 
 # Read latitude and longitude coordinates from CSV file.
-with open('locations.csv') as file:
+with open('mapPlot.csv') as file:
     openFile = csv.reader(file)
     for row in openFile:
         latitudes.append((int(-1*(float(row[0]) - 90) * 7)))
